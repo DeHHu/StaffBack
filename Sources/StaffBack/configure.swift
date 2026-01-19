@@ -9,6 +9,9 @@ public func configure(_ app: Application) async throws {
 	}
 	app.http.server.configuration.hostname = host
 	
+	guard let domain = Environment.get("APP_DOMAIN") else {
+		fatalError("add a host to the .env file")
+	}
 	guard let port = Environment.get("APP_PORT"), let intValue = Int(port) else {
 		fatalError("add a port to the .env file")
 	}
@@ -16,7 +19,7 @@ public func configure(_ app: Application) async throws {
 	
 	let scheme = Environment.get("APP_SCHEME") ?? "http"
     // register routes
-	let store = await Store(baseUrl: scheme + "://" + host + ":" + port)
+	let store = await Store(baseUrl: scheme + "://" + domain + ":" + port)
 	await app.storage.setWithAsyncShutdown(StoreKey.self, to: store)
     try routes(app)
 }
